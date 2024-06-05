@@ -1,0 +1,359 @@
+---
+title: "Evaluating Effectiveness of Climate Change Policies on US Greenhouse Gas Emissions"
+author: |
+  | Sakeena Aimandi
+  | sakeena.aimandi@uconn.edu
+  | Department of Statistics 
+  | University of Connecticut
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+documentclass: article
+papersize: letter
+fontsize: 12pt
+biblio-style: asa
+bibliography: bibliography.bib
+output: 
+  pdf_document:
+    keep_tex: yes
+    number_sections: yes
+header-includes:
+   - \usepackage[margin=1in]{geometry}
+   - \usepackage {hyperref}
+   - \hypersetup {colorlinks = true, linkcolor = blue, citecolor=blue, urlcolor = blue}
+toc: False
+---
+
+```{r setup, echo = FALSE, message =  FALSE, warning = FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, dpi = 300,
+out.width = "90%", fig.align = "center", dev = "pdf")
+```
+# Abstract {#sec:abstract}
+Climate change has been a continuous discussion among global policymakers ever since industrialization expanded. In 2024, the effects of our actions are almost impossible to ignore with rising global temperatures and greenhouse gas emissions. To regain some control over climate change effects, US policymakers have implemented a number of renewable energy and greenhouse gas policies, such as the Clean Air Act and Clean Power Plan. The question remains as to how effective such policies are at reducing the level of greenhouse gases in the atmosphere and essentially minimizing the effect of climate change. This paper examines the effectiveness of these policies in influencing changes in carbon emissions over a period of 30 years since 1990.
+
+Keywords: climate change; climate policy; emissions; greenhouse gases
+
+# Introduction {#sec:intro}
+
+Climate change has emerged as one of the most pressing global challenges of our time. As industrialization has expanded, so have the detrimental effects of our activities on our planet's natural climate system. With escalating global temperatures and greenhouse gas emissions posing significant threats to ecosystems, economies, and human well-being, each passing year stands to witness the damage. In response to these challenges, policymakers worldwide have implemented various measures to mitigate climate change's impacts.
+
+In the United States, a key player in the global economy, policymakers have introduced several renewable energy and greenhouse gas policies in recent decades. Among these, profound initiatives such as the Clean Air Act and the Clean Power Plan have aimed to address the root causes of climate change by regulating emissions from industrial sources and promoting the implementation of cleaner energy sources(@epaGHGInventory). However, questions regarding the effectiveness of these policies in reducing carbon emissions still circulate.
+
+Previous studies have examined the impacts of various policies and interventions on carbon emissions, ranging from regulatory measures to economic ones. While some research suggests that certain policies have led to significant reductions in emissions, others highlight challenges and limitations in achieving emission reduction targets. @Fekete et al. provided a qualitative review of existing policies in global economic leaders, such as China, India, and the US, and generated an exploratory analysis of global climate GHG emissions under current policies. Similarly, @Zheng et al. perform a systematic review of global climate change policies along with a global econometric analysis of the effect of these policies on carbon emissions. These studies offer a qualitative review of greenhouse gas emissions on global policies. For a more quantitative analysis, @Eskander et al. provide a global analysis of climate change policy to study their short-term and long-term effect on carbon emissions. This paper specifically notes that each new law reduces annual CO2 emissions per unit of gross domestic product by 0.78% during the first three years and 1.79% in the following years. This paper suggests evidence that climate change policy is contributing to greenhouse gas emissions reduction on a national scale.
+
+Despite this wealth of research, there is a significant gap regarding our understanding of the impact of specific policies on the effectiveness of climate change, especially on a US level. While many studies focus on a global analysis, they fail to realize that global climate policy is not generalizable to individual countries. By focusing on US carbon emissions, a country that is a leader in carbon policy, we will be able to narrow down the success of specific policies. This in-depth analysis can help foster a deeper understanding of how climate change policy affects national greenhouse gas emissions, paving the way for more informed and targeted climate action strategies.
+
+This paper contributes to the existing literature by providing a comprehensive analysis of US climate policies' effectiveness in reducing carbon emissions over 30 years. By synthesizing findings from diverse sources and employing robust statistical methods, we aim to elucidate the cumulative impact of policies on greenhouse gas emissions and identify factors influencing policy success or failure. Our findings will inform policymakers, researchers, and stakeholders seeking evidence-based strategies to address climate change and foster sustainable development.
+
+This paper is organized as follows: In Section 3, we provide a summary of data collection and content. Section 4 details the statistical methods used in this paper to analyze greenhouse gas emissions. In Section 5, we apply the discussed methods to perform analysis. Section 6 includes the results of our analysis, followed by a discussion of the implications of the findings and additional recommendations in Section 7. Finally, Section 8 concludes with a summary of key findings and suggestions for future research. 
+
+# Data {#sec:data}
+## Greenhouse Gas Emissions
+  The US Environmental Protection Agency(EPA) produces the Inventory of U.S. Greenhouse Gas Emissions and Sinks. which tracks the annual emissions and carbon removal in the United States since 1990(@epaGHGInventory). The EPA tracks a wide variety of data, from the emission levels of different types of greenhouse gases, emissions from different economic centers, and removals from natural processes. Data collection for the inventory includes information from individual facilities and suppliers of certain fossil fuels and industrial gases through the Greenhouse Gas Reporting Program. 
+  The data for this analysis was extracted from the Executive Summary table of the report, which contains greenhouse gas emission data broken down by economic sector from 1990-2019. We will focus on the net greenhouse gas emissions. The emissions are in units of MMT CO2 equivalent, or million metric tons of carbon dioxide equivalent, a standardized measure for comparing emissions from different greenhouse gases based on their warming potentials concerning carbon dioxide. This standardization allows for a refined unit for understanding the overall meaning of greenhouse gas emissions. 
+  
+  
+
+```{r, include=FALSE}
+# Data Reading
+ghg_emissions <- read.csv('/Users/sakeena/Downloads/Chapter Text/Executive Summary/Table ES-7.csv')
+
+# Data Cleaning
+colnames(ghg_emissions) <- as.numeric(unlist(ghg_emissions[2,]))
+colnames(ghg_emissions)
+ghg_emissions
+ghg_emissions <- ghg_emissions[-c(1:2), -c(1:1)]
+rownames(ghg_emissions) <- ghg_emissions[, 1]
+ghg_emissions <- ghg_emissions[, -c(1:1)]
+for (col in names(ghg_emissions)) {
+  ghg_emissions[[col]] <- as.numeric(gsub(",", "", ghg_emissions[[col]]))
+}
+ghg_emissions
+```
+
+## Climate Change Policy
+  The US Government has released multiple climate change policies and rules since 1990. Unfortunately, they are not aggregated in the format of a climate change policy timeline. Therefore, much of this data was acquired through researching the most significant climate change policy on a national level. The EPA website contains a list of laws and regulations they have administered since 1970 in terms of regulating emissions from transportation, a large contributor to global warming(@epaAccomplishments). The US White House governmental website also has a report on the climate change policy that US has implemented in the past 30 years(@crs2021). Through these two sources, we derived a comprehensive list of important climate change policies in the US. This list was then further refined after additional research regarding individual policies to come up with a list of 14 significant policies. The details of each are listed below;
+
+* Clean Air Act Amendment of 1990: This amendment aimed to address air pollution and included provisions for regulating greenhouse gases that were significant.
+
+* Energy Policy Act 2005: This act prioritized on energy production, efficiency, and conservation, including provisions for renewable energy and development of energy-efficient technologies. 
+
+* Energy Independence and Security Act 2007: This act aimed to reduce dependence on foreign oil by promoting renewable energy, biofuels, and energy efficiency in the US.
+
+* Executive Order 13423 (2007): This order directed federal agencies to improve energy efficiency, reduce greenhouse gas emissions, and promote sustainable practices.
+
+* Food, Conservation and Energy Act of 2008: This act delegated further provisions for renewable energy, conservation, and agricultural sustainability.
+
+* American Recovery and Reinvestment Act 2009: This economic stimulus package included funding for renewable energy, energy efficiency, and green infrastructure projects. 
+
+* Greenhouse Gas Reporting Program (GHGRP): This program requires large emitters to report their greenhouse gas emissions annually, providing valuable data for regulatory and analytic efforts.
+
+* Executive Order 13514 (2009): This order improve dfederal sustainability by setting greenhouse gas emission reduction targets and promoting sustainable practices.
+
+* EPA's GHG Tailoring Rule 2010: This rule set thresholds for greenhouse gas emissions from stationary sources, requiring larger emitters to obtain permits for emissions and implement control measures.
+
+* EPA Regulations on Vehicles and Powerplants 2012: These regulations set standards for vehicle emissions and power plant emissions, aiming to reduce greenhouse gas emissions from these major sources.
+
+
+```{r, include = FALSE}
+# Data Importing
+policy <- read.csv('/Users/sakeena/Downloads/Climate Change Regulation3.csv')
+policy
+```
+
+The below plot highlights the Net Emissions from 1990-2019. Net emissions are the overall sum of greenhouse gas emissions and removals. The EPA accounts for natural removal of carbon emissions by analyzing the LULUCF sector, or the Land Use, Land Use Change, and Forestry, which references the sector related to deforestation, afforestation and forest management practices. 
+
+```{r, echo=FALSE}
+# Plotting Net Emissions from 1990 - 2019 with Policy Points Highlighted
+plot(as.numeric(names(ghg_emissions)), ghg_emissions["Net Emissions (Sources and Sinks)", ], type = "l", xlab = "Year", ylab = "Net Emissions(MMT CO2 Eq.)", main = "Net Emissions from 1990-2019")
+points(policy[, "Date"][-1], ghg_emissions["Net Emissions (Sources and Sinks)", as.character(policy[, "Date"][-1])],col = "red", pch = 16)
+
+```
+
+It appears that the net emissions have risen drastically since 1990, reaching a peak around 2004 and then having a relatively decreasing trend until 2019. After 2004, there appear to some major fluctuations in greenhouse gas emissions over the next few years. This time series also exhibits quite some variability outside of the mean, suggesting that it is volatile. There does not seem to be seasonality in this data, which is expected since it is annual. 
+
+Comparing this time series with the different policies in the plot above, we can see that most policies coincide with a drop in net greenhouse gas emissions. There are three policies that actually coincide with a rise in emissions, which is likely worth exploring. It is important to note that some external events may contribute to a change in greenhouse gases that could be confounded with the effect of climate legislation. Therefore, a further analysis with these additional variables could be necessary.
+
+# Methods {#sec:methods}
+
+  The purpose of this paper is to identify if climate change policies have an effect on net greenhouse gas emissions in the US, and, more specifically, understand which policies constitute the most change. Many of these questions can be answered by fitting a time series model to the data with respect to different variables.
+  
+  The first step is to perform structural decomposition of the time series, which involves breaking it up into the trend component, the seasonal component and the random component.
+  
+  $X_t =$ trend component + seasonal component + random component
+  
+  $X_t = m_t + S_t + a_t$
+  
+  For this analysis, we will omit the seasonal component since the data does not exhibit apparent seasonality.
+  
+  The trend component will be fit through time series regression analysis, which involves fitting a linear and polynomial models to the data in order to identify which model is most accurate at capturing the variance in the data. For the purposes of this analysis, we will fit linear, quadratic and cubic models to the data. We will then evaluate the models using the Bayesian Information Criterion and $R^2$ value to determine which model has the best fit.
+  
+  For the random component, we will analyze the residuals of the best model to determine if they are accurately captured by the time series regression. This involves using the Shapiro-Wilk's test for determining if the residual pattern deviates from a normal distribution. If so, we will proceed to fit an ARIMA model to the residuals to allow for better fit. 
+  
+  Once this generalized time series model is fit, we will begin introducing the climate change policies and their corresponding years as an additional variable to the model. Model 1 will involve a binary variable for each year, depending on whether or not a policy has been implemented in that year. Model 2 will involve multiple binary variables for each climate change policy in our data to measure the individual impact of the climate change policies on net emissions. We will then use t-tests to test the significance of each policy at predicting the net emissions from greenhouse gases. Overall, this should provide a comprehensive analysis regarding the effect of legislation on net emissions.
+
+# Application {#sec:application}
+## Regression Analysis
+```{r, include=FALSE}
+library(astsa)
+library(knitr)
+library(tidyverse)
+library(forecast)
+```
+
+```{r, include=FALSE}
+# Fitting Linear Model
+x <- as.numeric(ghg_emissions["Net Emissions (Sources and Sinks)",]) # Net emissions
+t <- as.numeric(names(ghg_emissions)) # Time series
+linear_model <- lm(x ~ t) # Fit a linear regression model
+linear_summary <- summary(linear_model)
+linear_summary
+```
+
+```{r, echo=FALSE}
+# Plotting Linear Model
+plot(as.numeric(t), x, type = "l", xlab = "Year", ylab = "Net Emissions(MMT CO2 Eq.)", main = "Linear Model - Net Emissions from 1990-2019")
+lines(t, predict(linear_model, data.frame(t)), col = "blue", lty = "dashed")
+```
+```{r, include=FALSE}
+# Fitting Quadratic Model
+quadratic_model <- lm(x ~ t + I(t^2))
+quadratic_summary <- summary(quadratic_model)
+quadratic_summary
+```
+```{r, echo=FALSE}
+# Plotting Quadratic Model
+plot(as.numeric(t), x, type = "l", xlab = "Year", ylab = "Net Emissions(MMT CO2 Eq.)", main = "Quadratic Model - Net Emissions from 1990-2019")
+lines(t, predict(quadratic_model, data.frame(t)), col = "blue", lty = "dashed")
+```
+```{r, include=FALSE}
+# Fitting Cubic Model
+cubic_model <- lm(x ~ t + I(t^2) + I(t^3))
+cubic_summary <- summary(cubic_model)
+cubic_summary
+```
+
+```{r, echo=FALSE}
+# Plotting Cubic Model
+plot(as.numeric(t), x, type = "l", xlab = "Year", ylab = "Net Emissions(MMT CO2 Eq.)", main = "Cubic Model - Net Emissions from 1990-2019")
+lines(t, predict(cubic_model, data.frame(t)), col = "blue", lty = "dashed")
+```
+
+```{r, echo=FALSE}
+# Evaluating Regression Models through BIC
+n = length(x)
+BIC.linear = BIC(linear_model)/n
+BIC.quadratic = BIC(quadratic_model)/n
+BIC.cubic = BIC(cubic_model)/n
+rows <- data.frame(models = c("Linear Model", "Quadratic Model", "Cubic Model"), bic = c(BIC.linear, BIC.quadratic, BIC.cubic), R_squared = c(linear_summary$adj.r.squared, quadratic_summary$adj.r.squared, cubic_summary$adj.r.squared))
+kable(rows, col.names = c("Models", "BIC", "Adjusted R-squared"), caption="Evaluation Values for Regression Models")
+```
+
+Based on the above evaluation criteria, the quadratic and cubic model are equally as good at fitting the time series. The BIC criteria is lower for the quadratic and cubic models and the R-squared value is greater for these two models. To avoid overfitting, we will proceed with the quadratic model.
+
+## Residual Analysis for Quadratic Model
+In order to evaluate the residual component of this regression, we must analyze the residual plots and perform appropriate hypothesis testing in the form of Shapiro-Wilk's tests. 
+
+```{r, echo=FALSE, include=FALSE}
+par(mfrow=c(2,2))
+plot(quadratic_model, main="Quadratic Residuals", which=1:4)
+```
+
+```{r, echo=FALSE}
+shapiro.test(resid(quadratic_model))
+```
+The hypothesis being tested above is for the normality of residuals. This test operates on a null hypothesis that the data is normally distributed. Since the p-value is large, the residuals appear to be normally distributed, so we can proceed with this model for the remainder of our analysis. 
+
+## Model 1
+### Fitting with Number of Policies Variable
+  Now that the overall model is fit, we can begin to analyze the policy variable. This involves creating an explanatory variable with record of the number of climate change policies recorded for that year. We can use the data from the policies collected earlier to generate this variable. The adjusted model is shown below.
+  
+  $X = \beta_0 + \beta_1T + \beta_2T^2 + \beta_{policy}P + \epsilon$, where $P$ is the number of policies recorded for year $T$. 
+  
+```{r, include=FALSE}
+# Adding Policy Binary Variable
+policy_binary <- ghg_emissions["Net Emissions (Sources and Sinks)",]
+
+policy_binary <- policy_binary %>% pivot_longer(cols = everything(), names_to = "Year", values_to = "Value") # Pivoting the Frame
+policy_binary$clean_air_1990 <- ifelse(policy_binary$Year == 1990, 1, 0)
+policy_binary$energy_act_2005 <- ifelse(policy_binary$Year == 2005, 1, 0)
+policy_binary$energy_independence_2007 <- ifelse(policy_binary$Year == 2007, 1, 0)
+policy_binary$executive_order_2007 <- ifelse(policy_binary$Year == 2007, 1, 0)
+policy_binary$food_conservation_energy_2008 <- ifelse(policy_binary$Year == 2008, 1, 0)
+policy_binary$american_recovery_2009 <- ifelse(policy_binary$Year == 2009, 1, 0)
+policy_binary$GHGRP <- ifelse(policy_binary$Year == 2009, 1, 0)
+policy_binary$executive_order_2009 <- ifelse(policy_binary$Year == 2009, 1, 0)
+policy_binary$GHG_tailoring <- ifelse(policy_binary$Year == 2010, 1, 0)
+policy_binary$epa_regulations <- ifelse(policy_binary$Year == 2012, 1, 0)
+
+policy_binary$policy <- policy_binary$clean_air_1990 + policy_binary$energy_act_2005 + policy_binary$energy_independence_2007 + policy_binary$executive_order_2007 + policy_binary$food_conservation_energy_2008 + policy_binary$american_recovery_2009 + policy_binary$GHGRP + policy_binary$executive_order_2009 + policy_binary$GHG_tailoring + policy_binary$epa_regulations
+```
+
+```{r, include=FALSE}
+quadratic_model_bin <- lm(x ~ t + I(t^2) + policy_binary$policy)
+quadratic_model_bin_summary <- summary(quadratic_model_bin)
+```
+
+```{r, echo=FALSE}
+plot(as.numeric(t), x, type = "l", xlab = "Year", ylab = "Net Emissions(MMT CO2 Eq.)", main = "Net Emissions from 1990-2019")
+lines(t, predict(quadratic_model_bin, data.frame(t)), col = "blue", lty = "dashed")
+```
+The fitted model displayed above is clearly more accurate relative to the actual time series, especially in reflecting the fluctuations due to policies. However, we must consider the normality of the residuals to ensure that this model sufficiently captures the variability in the data.
+
+### Residual Analysis
+```{r, echo=FALSE, include=FALSE}
+par(mfrow=c(2,2))
+plot(quadratic_model_bin, main="Quadratic Residuals with Policy Binary", which=1:4)
+```
+```{r, echo=FALSE}
+shapiro.test(resid(quadratic_model_bin))
+```
+The Shapiro-Wilk's normality test also show a large p-value suggesting normality in the residuals. However, we can take a look at the ACF plot to determine any autocorrelation or partial autocorrelation in the residuals.
+
+```{r, echo=FALSE}
+acf(resid(quadratic_model_bin), main="ACF of Residuals of Quadratic Model with Policy Binary", lag.max = 70)
+```
+
+The above ACF shows a significant first two lags. This suggests that there exists some autocorrelation in the residuals, so we should fit the residuals using an ARIMA model. 
+
+
+```{r, echo=FALSE}
+quadratic_bin_resid <- auto.arima(resid(quadratic_model_bin),ic="bic")
+quadratic_bin_resid 
+```
+
+The ARIMA model automatically selected is an MA(1) model. 
+
+### Prediction
+We can additively combine the residual component with the trend component from earlier to plot the model against the actual data.
+
+```{r, echo=FALSE}
+quadratic_bin_resid_predict <- forecast(quadratic_bin_resid, h = 30)  # h = 30 for 30 years (1990-2019)
+```
+
+
+```{r, echo=FALSE}
+quadratic_bin_predict <- predict(quadratic_model_bin)
+quadratic_bin_predict_sum <- quadratic_bin_predict + quadratic_bin_resid_predict$mean
+plot(as.numeric(t),x, type = "l", xlab = "Year", ylab = "Net Emissions(MMT CO2 Eq.)", main = "Net Emissions from 1990-2019")
+lines(t, quadratic_bin_predict_sum, col = "red", lty = 2)
+```
+
+The above model more closely follows fluctuations in the trend, suggesting that the number of policies regarding climate change implemented in any given year does contribute to the level of greenhouse gas emissions that year. 
+
+## Model 2
+### Fitting with Individual Policies Variable
+  We also must analyze the effect of each specific policy on the level of greenhouse gas emissions. This involve adjusting the previous model by adding the binary indicator variables for each policy. 
+```{r, include=FALSE}
+quadratic_model_ind_bin<- lm(x ~ t + I(t^2) + policy_binary$clean_air_1990 + policy_binary$energy_act_2005 + policy_binary$energy_independence_2007 + policy_binary$executive_order_2007 + policy_binary$food_conservation_energy_2008 + policy_binary$american_recovery_2009 + policy_binary$GHGRP + policy_binary$executive_order_2009 + policy_binary$GHG_tailoring + policy_binary$epa_regulations)
+quadratic_model_ind_bin_summary<- summary(quadratic_model_ind_bin)
+```
+
+```{r, echo=FALSE}
+plot(as.numeric(t), x, type = "l", xlab = "Year", ylab = "Net Emissions(MMT CO2 Eq.)", main = "Net Emissions from 1990-2019")
+lines(t, predict(quadratic_model_ind_bin, data.frame(t)), col = "blue", lty = "dashed")
+```
+The above model displays more accuracy with regards to the actual net greenhouse gas emissions. 
+
+### Residual Analysis
+
+```{r, warning=FALSE, echo=FALSE, include=FALSE}
+par(mfrow=c(2,2))
+plot(quadratic_model_ind_bin, main="Quadratic Residuals with Individual Policies", which=1:4)
+```
+
+```{r, echo=FALSE}
+acf(resid(quadratic_model_ind_bin), main="ACF of Quadratic Residuals with Individual Policies", lag.max = 70)
+```
+In analyzing the residuals of this individual policy based model, we can see that the ACF has the first significant lag, implying that we must again fit an ARIMA model to the data. 
+
+```{r, echo=FALSE}
+quadratic_ind_bin_resid  <- auto.arima(resid(quadratic_model_ind_bin),ic="bic")
+```
+
+### Prediction
+```{r, echo=FALSE}
+quadratic_ind_bin_resid_predict <- forecast(quadratic_ind_bin_resid, h = 30)  # h = 30 for 30 years (1990-2019)
+```
+```{r, echo=FALSE}
+quadratic_ind_bin_predict <- predict(quadratic_model_ind_bin)
+quadratic_ind_bin_predict_sum <- quadratic_ind_bin_predict + quadratic_ind_bin_resid_predict$mean
+plot(as.numeric(t),x, type = "l", xlab = "Year", ylab = "Quadratic Model - Net Emissions(MMT CO2 Eq.)", main = "Net Emissions from 1990-2019")
+lines(t, quadratic_ind_bin_predict_sum, col = "red", lty = 2)
+```
+
+# Results {#sec:results}
+
+The analysis conducted in this study aimed to assess the effectiveness of US climate policies in influencing changes in carbon emissions over the past three decades. Through time series regression modeling, various models were evaluated to determine the best fit for the net greenhouse gas emissions data from 1990 to 2019.
+
+The initial fitting suggested that the quadratic model was the best fit to the data due to a smaller BIC and larger adjusted R-squared values. With this initial fitting complete, we proceed to fit two more models to the data. One of these models accounted for the number of policies executed in each year as an additional variable to the trend component. The other model dissected the climate change policies into individual variables to determine the independent effect of each variable on prediction of greenhouse gas emissions. The coefficients of these models are listed below, along with their errors, t-statistics and p-values.
+
+```{r, echo=FALSE}
+quadratic_model_bin_summary$coefficients
+```
+```{r, echo=FALSE}
+quadratic_model_ind_bin_summary$coefficients
+```
+For Model 1, it appears that the binary policy variable did not contribute significantly to the prediction of net greenhouse gas emissions for a corresponding year with a large p-value of 0.3616. For Model 2, the binary predictor variables for the American Recovery and Reinvestment Act 2009 policy and the EPA Regulations on Vehicles and Power plants policy both contributed significantly to the prediction of net greenhouse gas emissions with p-values of 0.0174 and 0.00435, respectively. When the predictions for the net greenhouse gas emissions from each model are overlayed as below, it is apparent that these models are very similar in their predictions.
+
+```{r, echo=FALSE}
+plot(as.numeric(t), x, type = "l", xlab = "Year", ylab = "Net Emissions(MMT CO2 Eq.)", main = "Net Emissions from 1990-2019")
+lines(t, quadratic_ind_bin_predict_sum, col = "red", lty = 1)
+lines(t, quadratic_bin_predict_sum, col = "blue", lty = 2)
+legend("topright", legend = c("Model 1", "Model 2"), col = c("blue", "red"), lty = c(2, 1))
+```
+
+  Additionally, an analysis of the individual impact of these two climate change policies on net emissions revealed valuable insights. The American Recovery and Reinvestment Act of 2009 was an economic stimulus that was designed to create jobs and bolster the economy(@ARRA). However, it included provisions related to renewable energy and infrastructure projects that can impact greenhouse gas emissions. These involved providing funding to solar, wind, and biomass energy to reduce fossil fuel reliance. Energy efficiency programs were also implemented in low-income households and energy efficient upgrades in public buildings and transportation systems. Similarly, EPA Regulations of 2012 sought to establish new standards for light-duty vehicles to reduce greenhouse gas emissions as well a regulating emissions from power plants, both of which are a significant contributor to annual emissions(@epaGHGInventory). In comparison with the other policies, these two policies were likely significant predictors due to their targeting of the largest sectors wherein greenhouse gas emissions are common
+
+# Discussion {#sec:discussion}
+
+  The findings of this study contribute to our understanding of the relationship between climate change policies and greenhouse gas emissions in the US. The identification of the quadratic model along with the inclusion of climate change policies as explanatory variables in the regression model provides quantitative evidence of their influence on emission trends. The observed policies that had contributed to the prediction of net annual greenhouse gas emissions suggest the need for more policies in major sectors to successfully mitigate climate change. 
+  
+  However, it is essential to acknowledge the limitations of this study. The analysis focused solely on the relationship between climate policies and net emissions, overlooking other potential drivers of emissions, such as economic factors or technological advancements. Another issue could be the lack of long-term analysis of certain policies. For example, the Clean Air Act sets regulatory standards that may have long-term impacts on greenhouse gas emissions that are not captured by the regression analysis in this paper. This oversimplification can overlook the actual impact of these policies. Additionally, this analysis did not account for interactions between different policies, especially those that were established in the same year.
+  
+  Future research could address these limitations by conducting more comprehensive analyses that incorporate a broader range of factors, utilize longer timeframes, and employ more sophisticated modeling techniques to better understand the effectiveness and implications of climate policies on greenhouse gas emissions. The scope of this analysis could be narrowed down to state-level climate change policies and their state-level annual emissions to determine the most significant state-level legislation. 
+  
+  
+# Conclusion {#sec:conclusion}
+  In conclusion, this study underscores the critical role of climate change policies in shaping greenhouse gas emissions patterns and highlights the importance of evidence-based policy design and evaluation in addressing the global challenge of climate change. The analysis suggests that policies that have the most success at reducing greenhouse gases are those that target major economic sectors that contribute to greenhouse gas emissions, such as transportation and power plants. By advancing our understanding of the relationship between policy interventions and emissions outcomes, policymakers can make informed decisions to drive meaningful progress towards a sustainable and resilient future.
+
+# References {#sec:references}
+
